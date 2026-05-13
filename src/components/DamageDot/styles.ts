@@ -18,6 +18,11 @@ export const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
+  dotHeal: {
+    backgroundColor: '#003D00',
+    borderColor: '#00CC44',
+    shadowColor: '#00FF44',
+  },
   dotDragging: {
     shadowOpacity: 0.9,
     shadowRadius: 18,

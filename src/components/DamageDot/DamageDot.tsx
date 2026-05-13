@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Text } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -12,7 +12,7 @@ import { useDragDrop } from '@/utils/useDragDrop';
 import { styles } from './styles';
 import type { DamageDotProps } from './types';
 
-export function DamageDot({ value, onDropped }: DamageDotProps) {
+export function DamageDot({ value, mode = 'damage', onDropped }: DamageDotProps) {
   const { findCardAt } = useDragDrop();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -32,11 +32,13 @@ export function DamageDot({ value, onDropped }: DamageDotProps) {
     (x: number, y: number) => {
       const card = findCardAt(x, y);
       if (card) {
-        card.onReceive(value);
+        // Heal passes a negative value so the card subtracts (clamped to 0 in Card)
+        const signedValue = mode === 'heal' ? -value : value;
+        card.onReceive(signedValue);
         onDropped?.(value, card.id);
       }
     },
-    [findCardAt, value, onDropped],
+    [findCardAt, value, mode, onDropped],
   );
 
   const gesture = Gesture.Pan()
@@ -56,10 +58,17 @@ export function DamageDot({ value, onDropped }: DamageDotProps) {
       runOnJS(handleDrop)(event.absoluteX, event.absoluteY);
     });
 
+  const isHeal = mode === 'heal';
+
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View
-        style={[styles.dot, isDragging && styles.dotDragging, animatedStyle]}
+        style={[
+          styles.dot,
+          isHeal && styles.dotHeal,
+          isDragging && styles.dotDragging,
+          animatedStyle,
+        ]}
       >
         <Text style={styles.value}>{value}</Text>
       </Animated.View>

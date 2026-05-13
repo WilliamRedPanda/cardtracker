@@ -13,7 +13,7 @@ export function Card({ id, label = 'Card', compact = false, style }: CardProps) 
   const boundsRef = useRef<CardBounds | null>(null);
 
   const onReceive = useCallback((value: number) => {
-    setTotal((prev) => prev + value);
+    setTotal((prev) => Math.max(0, prev + value));
   }, []);
 
   useEffect(() => {
