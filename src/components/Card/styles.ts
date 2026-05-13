@@ -25,6 +25,16 @@ export const styles = StyleSheet.create({
     minHeight: 60,
     borderRadius: 10,
   },
+  cardDragging: {
+    shadowColor: '#9090C0',
+    shadowOpacity: 0.9,
+    shadowRadius: 18,
+    elevation: 20,
+  },
+  cardHovered: {
+    borderColor: '#9090C0',
+    borderWidth: 2.5,
+  },
   label: {
     fontSize: 12,
     fontWeight: '600',

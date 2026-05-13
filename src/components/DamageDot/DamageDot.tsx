@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { Text } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -44,7 +43,7 @@ export function DamageDot({ value, mode = 'damage', onDropped }: DamageDotProps)
   const gesture = Gesture.Pan()
     .onStart(() => {
       scale.value = withSpring(1.2);
-      runOnJS(setIsDragging)(true);
+      setIsDragging(true);
     })
     .onUpdate((event) => {
       translateX.value = event.translationX;
@@ -54,8 +53,8 @@ export function DamageDot({ value, mode = 'damage', onDropped }: DamageDotProps)
       scale.value = withSpring(1);
       translateX.value = withSpring(0);
       translateY.value = withSpring(0);
-      runOnJS(setIsDragging)(false);
-      runOnJS(handleDrop)(event.absoluteX, event.absoluteY);
+      setIsDragging(false);
+      handleDrop(event.absoluteX, event.absoluteY);
     });
 
   const isHeal = mode === 'heal';
