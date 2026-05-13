@@ -6,7 +6,7 @@ import { useDragDrop } from '@/utils/useDragDrop';
 import { styles } from './styles';
 import type { CardProps } from './types';
 
-export function Card({ id, label = 'Card' }: CardProps) {
+export function Card({ id, label = 'Card', compact = false, style }: CardProps) {
   const { registerCard, unregisterCard } = useDragDrop();
   const [total, setTotal] = useState(0);
   const viewRef = useRef<View>(null);
@@ -29,10 +29,10 @@ export function Card({ id, label = 'Card' }: CardProps) {
           boundsRef.current = { x: pageX, y: pageY, width, height };
         });
       }}
-      style={styles.card}
+      style={[styles.card, compact && styles.cardCompact, style]}
     >
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.total}>{total}</Text>
+      <Text style={[styles.label, compact && styles.labelCompact]}>{label}</Text>
+      <Text style={[styles.total, compact && styles.totalCompact]}>{total}</Text>
     </View>
   );
 }

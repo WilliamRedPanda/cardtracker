@@ -1,25 +1,20 @@
-import { Card } from "@/components/Card";
-import { DragDropProvider } from "@/components/DragDropProvider";
-import { DamageDot } from "@/components/DamageDot";
+import { useRouter } from "expo-router";
 import { View } from "react-native";
 
+import { CoinToss } from "@/components/CoinToss";
 import { styles } from "@/styles/home";
 
 export default function Index() {
+  const router = useRouter();
+
   return (
-    <DragDropProvider>
-      <View style={styles.container}>
-        <View style={styles.cards}>
-          <Card id="player-1" label="Player 1" />
-          <Card id="player-2" label="Player 2" />
-        </View>
-        <View style={styles.dots}>
-          <DamageDot value={1} />
-          <DamageDot value={3} />
-          <DamageDot value={5} />
-          <DamageDot value={10} />
-        </View>
-      </View>
-    </DragDropProvider>
+    <View style={styles.container}>
+      <CoinToss
+        size={140}
+        onResult={() => {
+          setTimeout(() => router.push("/activegame"), 700);
+        }}
+      />
+    </View>
   );
 }

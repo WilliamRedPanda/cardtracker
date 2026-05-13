@@ -18,6 +18,13 @@ export const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
+  cardCompact: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    minWidth: 0,
+    minHeight: 60,
+    borderRadius: 10,
+  },
   label: {
     fontSize: 12,
     fontWeight: '600',
@@ -26,10 +33,19 @@ export const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginBottom: 10,
   },
+  labelCompact: {
+    fontSize: 8,
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
   total: {
     fontSize: 52,
     fontWeight: '800',
     color: '#FF3355',
     lineHeight: 56,
+  },
+  totalCompact: {
+    fontSize: 22,
+    lineHeight: 26,
   },
 });
