@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -16,6 +16,10 @@ const FLIP_HALF_DURATION = 90;
 const TOSS_HEIGHT = 110;
 const TOSS_UP_DURATION = 680;
 
+// State updates are scheduled at the same offsets as the original withTiming callbacks
+const MID_FLIP_DELAY = 13 * FLIP_HALF_DURATION;
+const FLIP_COMPLETE_DELAY = 14 * FLIP_HALF_DURATION;
+
 export function CoinToss({ size = 120, onResult }: CoinTossProps) {
   const styles = useMemo(() => createStyles(size), [size]);
 
@@ -25,23 +29,15 @@ export function CoinToss({ size = 120, onResult }: CoinTossProps) {
 
   const scaleX = useSharedValue(1);
   const translateY = useSharedValue(0);
+  const midTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const endTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const animatedCoinStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }, { scaleX: scaleX.value }],
-  }));
-
-  const onMidFlip = useCallback((side: CoinSide) => {
-    setDisplaySide(side);
+  useEffect(() => {
+    return () => {
+      if (midTimerRef.current) clearTimeout(midTimerRef.current);
+      if (endTimerRef.current) clearTimeout(endTimerRef.current);
+    };
   }, []);
-
-  const onFlipComplete = useCallback(
-    (side: CoinSide) => {
-      setResult(side);
-      setIsFlipping(false);
-      onResult?.(side);
-    },
-    [onResult],
-  );
 
   const handlePress = useCallback(() => {
     if (isFlipping) return;
@@ -50,12 +46,22 @@ export function CoinToss({ size = 120, onResult }: CoinTossProps) {
     setIsFlipping(true);
     setResult(null);
 
+    midTimerRef.current = setTimeout(() => {
+      setDisplaySide(outcome);
+    }, MID_FLIP_DELAY);
+
+    endTimerRef.current = setTimeout(() => {
+      setResult(outcome);
+      setIsFlipping(false);
+      onResult?.(outcome);
+    }, FLIP_COMPLETE_DELAY);
+
     translateY.value = withSequence(
       withTiming(-TOSS_HEIGHT, { duration: TOSS_UP_DURATION, easing: Easing.out(Easing.quad) }),
       withSpring(0, { damping: 10, stiffness: 120 }),
     );
 
-    // 6 full flips then a final flip that switches content at its midpoint
+    // 6 full flips then a final flip — no completion callbacks needed
     scaleX.value = withSequence(
       withTiming(0, { duration: FLIP_HALF_DURATION }),
       withTiming(1, { duration: FLIP_HALF_DURATION }),
@@ -69,14 +75,14 @@ export function CoinToss({ size = 120, onResult }: CoinTossProps) {
       withTiming(1, { duration: FLIP_HALF_DURATION }),
       withTiming(0, { duration: FLIP_HALF_DURATION }),
       withTiming(1, { duration: FLIP_HALF_DURATION }),
-      withTiming(0, { duration: FLIP_HALF_DURATION }, () => {
-        onMidFlip(outcome);
-      }),
-      withTiming(1, { duration: FLIP_HALF_DURATION }, () => {
-        onFlipComplete(outcome);
-      }),
+      withTiming(0, { duration: FLIP_HALF_DURATION }),
+      withTiming(1, { duration: FLIP_HALF_DURATION }),
     );
-  }, [isFlipping, onMidFlip, onFlipComplete, scaleX, translateY]);
+  }, [isFlipping, onResult, scaleX, translateY]);
+
+  const animatedCoinStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }, { scaleX: scaleX.value }],
+  }));
 
   return (
     <View style={styles.container}>
