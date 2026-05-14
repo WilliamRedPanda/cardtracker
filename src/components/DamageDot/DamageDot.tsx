@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Text } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -56,7 +57,7 @@ export function DamageDot({ value, mode = 'damage', onDropped }: DamageDotProps)
       translateX.value = withSpring(0);
       translateY.value = withSpring(0);
       isDragging.value = false;
-      handleDrop(event.absoluteX, event.absoluteY);
+      runOnJS(handleDrop)(event.absoluteX, event.absoluteY);
     });
 
   const isHeal = mode === 'heal';

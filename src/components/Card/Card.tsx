@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -60,22 +61,22 @@ export function Card({ id, label = 'Card', compact = false, style, side, total, 
     .onStart(() => {
       scale.value = withSpring(1.06);
       opacity.value = withTiming(0.85);
-      startDrag(id, side);
+      runOnJS(startDrag)(id, side);
     })
     .onUpdate((event) => {
       translateX.value = event.translationX;
       translateY.value = event.translationY;
-      updateDrag(event.absoluteX, event.absoluteY);
+      runOnJS(updateDrag)(event.absoluteX, event.absoluteY);
     })
     .onEnd(() => {
-      handleSwapDrop();
+      runOnJS(handleSwapDrop)();
     })
     .onFinalize(() => {
       scale.value = withSpring(1);
       opacity.value = withTiming(1);
       translateX.value = withSpring(0);
       translateY.value = withSpring(0);
-      cancelDrag();
+      runOnJS(cancelDrag)();
     });
 
   const animatedStyle = useAnimatedStyle(() => {

@@ -11,6 +11,8 @@ export const styles = StyleSheet.create({
     bottom: 0,
     flexDirection: "row",
     alignItems: "center",
+    zIndex: 100,
+    elevation: 100,
   },
   containerLeft: {
     position: "absolute",
@@ -19,6 +21,8 @@ export const styles = StyleSheet.create({
     bottom: 0,
     flexDirection: "row",
     alignItems: "center",
+    zIndex: 100,
+    elevation: 100,
   },
   clip: {
     width: MENU_WIDTH,
