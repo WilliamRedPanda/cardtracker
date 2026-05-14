@@ -16,7 +16,7 @@ import type { CardProps } from './types';
 
 export function Card({ id, label = 'Card', compact = false, style, side, total, onTotalChange, onSwap }: CardProps) {
   const { registerCard, unregisterCard } = useDragDrop();
-  const { registerSwapCard, unregisterSwapCard, draggedId, hoveredId, startDrag, updateDrag, endDrag, cancelDrag } =
+  const { registerSwapCard, unregisterSwapCard, draggedIdShared, hoveredIdShared, startDrag, updateDrag, endDrag, cancelDrag } =
     useCardSwap();
 
   const boundsRef = useRef<CardBounds | null>(null);
@@ -78,13 +78,21 @@ export function Card({ id, label = 'Card', compact = false, style, side, total, 
       cancelDrag();
     });
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
-  const isDragging = draggedId === id;
-  const isHovered = hoveredId === id;
+  const animatedStyle = useAnimatedStyle(() => {
+    const dragging = draggedIdShared.value === id;
+    const hovered = hoveredIdShared.value === id;
+    return {
+      transform: [{ translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value }],
+      opacity: opacity.value,
+      zIndex: dragging ? 10 : 1,
+      borderColor: hovered ? '#9090C0' : '#2E2E4A',
+      borderWidth: hovered ? 2.5 : 1.5,
+      shadowColor: dragging ? '#9090C0' : '#000',
+      shadowOpacity: dragging ? 0.9 : 0.5,
+      shadowRadius: dragging ? 18 : 10,
+      elevation: dragging ? 20 : 10,
+    };
+  });
 
   return (
     <GestureDetector gesture={gesture}>
@@ -95,15 +103,7 @@ export function Card({ id, label = 'Card', compact = false, style, side, total, 
             boundsRef.current = { x: pageX, y: pageY, width, height };
           });
         }}
-        style={[
-          styles.card,
-          compact && styles.cardCompact,
-          isDragging && styles.cardDragging,
-          isHovered && styles.cardHovered,
-          { zIndex: isDragging ? 10 : 1 },
-          style,
-          animatedStyle,
-        ]}
+        style={[styles.card, compact && styles.cardCompact, style, animatedStyle]}
       >
         <Text style={[styles.label, compact && styles.labelCompact]}>{label}</Text>
         <Text style={[styles.total, compact && styles.totalCompact]}>{total}</Text>
