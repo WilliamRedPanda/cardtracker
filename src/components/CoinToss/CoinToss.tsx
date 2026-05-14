@@ -6,7 +6,6 @@ import Animated, {
   withSequence,
   withTiming,
   withSpring,
-  runOnJS,
   Easing,
 } from 'react-native-reanimated';
 
@@ -71,10 +70,10 @@ export function CoinToss({ size = 120, onResult }: CoinTossProps) {
       withTiming(0, { duration: FLIP_HALF_DURATION }),
       withTiming(1, { duration: FLIP_HALF_DURATION }),
       withTiming(0, { duration: FLIP_HALF_DURATION }, () => {
-        runOnJS(onMidFlip)(outcome);
+        onMidFlip(outcome);
       }),
       withTiming(1, { duration: FLIP_HALF_DURATION }, () => {
-        runOnJS(onFlipComplete)(outcome);
+        onFlipComplete(outcome);
       }),
     );
   }, [isFlipping, onMidFlip, onFlipComplete, scaleX, translateY]);
